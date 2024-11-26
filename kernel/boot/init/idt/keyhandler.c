@@ -51,7 +51,11 @@ void key_translate(uint8_t scancode) {
     if (scancode == LSHIFT || scancode == RSHIFT) {
         shift_pressed = true;  // Shift key is pressed
     } else if (scancode == BACKSPACE) {
-        kprintf("\b");
+        // Handle backspace
+        if (strlen(key_buffer) > 0) {
+            key_buffer[strlen(key_buffer) - 1] = '\0';  // Remove the last character from buffer
+            kprintf("\b \b");  // Move cursor back, overwrite with space, and move back again
+        }
     } else if (scancode == ENTER) {
         kputchar('\n');
         
@@ -71,8 +75,10 @@ void key_translate(uint8_t scancode) {
             letter = sc_ascii[scancode];  // Use normal character
         }
 
-        append(key_buffer, letter);
-        char str[2] = {letter, '\0'};
-        kprint(str);
+        if (letter != '?') {  // Ignore invalid key presses
+            append(key_buffer, letter);
+            char str[2] = {letter, '\0'};
+            kprint(str);
+        }
     }
 }
