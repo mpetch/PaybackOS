@@ -13,8 +13,10 @@ void task2() {
 }
 
 void userspace_init(void) {
-    start_task(task1);
-    start_task(task2);
-    scheduler();
+    if (checkdebug() == true) {
+        start_task(task1);
+        start_task(task2);
+        scheduler();
+    }
     while (1);
 }

@@ -25,6 +25,7 @@ typedef struct
 #define Free 7 // Free
 #define Calloc 8 // Calloc
 #define Realloc 9 // Realloc
+#define Stack_Frame 10 // return the current stack frame
 
 // Our system call function, this is called by int $80
 void syscall_handler(stack_frame_t *frame) {
@@ -55,8 +56,28 @@ void syscall_handler(stack_frame_t *frame) {
     } else if (frame->eax == Realloc) {
         /*the EAX register is used as return*/frame->eax = (uint32_t)krealloc((void*)frame->ebx, frame->ecx); // Resize the pointer
         return;
+    } else if (frame->eax == Stack_Frame) {
+        // Print the entire stack frame
+        kprintf("gs: %x\n", frame->gs);
+        kprintf("fs: %x\n", frame->fs);
+        kprintf("es: %x\n", frame->es);
+        kprintf("ds: %x\n", frame->ds);
+        kprintf("edi: %x\n", frame->edi);
+        kprintf("esi: %x\n", frame->esi);
+        kprintf("ebp: %x\n", frame->ebp);
+        kprintf("ebx: %x\n", frame->ebx);
+        kprintf("edx: %x\n", frame->edx);
+        kprintf("ecx: %x\n", frame->ecx);
+        kprintf("eax: %x\n", frame->eax);
+        kprintf("int num: %x\n", frame->int_num);
+        kprintf("eip: %x\n", frame->eip);
+        kprintf("cs: %x\n", frame->cs);
+        kprintf("eflags: %x\n", frame->eflags);
+        kprintf("useresp: %x\n", frame->useresp);
+        kprintf("ss: %x\n", frame->ss);
+        return;
     } else {
-        kprintf("Interrupt %x is not a real number", frame->int_num);
+        kprintf("Interrupt %x is not a real syscall", frame->int_num);
     }
     return; // If no valid syscall number, do nothing
 }

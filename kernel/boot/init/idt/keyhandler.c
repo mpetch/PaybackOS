@@ -4,7 +4,7 @@
 #include <tty.h>
 #include <string.h>
 
-void execute_command(char *input);
+void handle_command(char* command);
 
 #define BACKSPACE 0x0E
 #define ENTER 0x1C
@@ -54,6 +54,12 @@ void key_translate(uint8_t scancode) {
         kprintf("\b");
     } else if (scancode == ENTER) {
         kputchar('\n');
+        
+        // Call handle_command when Enter is pressed, passing the content of key_buffer
+        handle_command(key_buffer);
+        
+        // Reset the key_buffer after handling the command
+        memset(key_buffer, 0, sizeof(key_buffer));  // Clear the buffer for new input
     } else {
         char letter;
 
